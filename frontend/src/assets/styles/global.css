@@ -1,0 +1,53 @@
+/* Global */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom right, #eef2ff, #dbeafe);
+    color: #1f2937;
+}
+
+
+
+/* Buttons */
+button {
+    height: 48px;
+
+    color: black;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+button:hover {
+    cursor: pointer;
+    opacity: 0.9;
+}
+
+
+
+/* Couleurs des humeurs */
+.joyeux {
+    background-color: #fef3c7;
+    border: 2px solid #fde68a;
+}
+
+.triste {
+    background-color: #dbeafe;
+    border: 2px solid #93c5fd;
+}
+
+.tendu {
+    background-color: #fee2e2;
+    border: 2px solid #fca5a5;
+}
+
+.mysterieux {
+    background-color: #ede9fe;
+    border: 2px solid #c4b5fd;
+}
+
+.neutre {
+    background-color: #f3f4f6;
+    border: 2px solid #d1d5db;
+}

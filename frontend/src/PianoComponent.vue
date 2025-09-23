@@ -24,16 +24,20 @@ const props = withDefaults(defineProps<Props>(), {
 onMounted(() => {
     if (!pianoContainer.value) return;
 
+    // Valeur de la première et dernière octave en fonction de si on est sur tel ou sur ordi
+    const isMobile = window.outerWidth < 768;
+    const startOctave = isMobile ? 3 : 2;
+    const endOctave = isMobile ? 5 : 6;
+
     piano.value = new Instrument(pianoContainer.value, {
-        startOctave: 2,
-        endOctave: 6,
+        startOctave,
+        endOctave,
         showOctaveNumbers: true,
         highlightColor: '#3490dc',
     });
 
 
     piano.value.addKeyMouseDownListener((note) => {
-        console.log(note)
         startAnimation([`${note.note}${note.accidental || ''}${note.octave}`]);
         emit('note-click', `${note.note}${note.accidental || ''}${note.octave}`);
     });
@@ -60,7 +64,6 @@ function startAnimation(notes: string[]) {
 
     piano.value.reload();
 
-    console.log('highlightedNotes', notes);
     for (const note of notes) {
         piano.value.keyDown(note);
     }
@@ -91,12 +94,12 @@ onUnmounted(() => {
 
 </script>
 
-<style scoped>
+<style>
 /* Styles spécifiques au composant Piano si nécessaire */
 .piano-component-div {
     display: flex;
     justify-content: center;
-    height: 250px;
+    height: max-content;
     width: 100%;
 
 
