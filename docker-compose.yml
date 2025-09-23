@@ -1,0 +1,10 @@
+services:
+  daccords:
+    container_name: daccords
+    build:
+      context: ./frontend      # Lieu du dossier 'frontend' dans le projet
+      dockerfile: ./Dockerfile  # Lieu du dockerfile, par rapport au context
+    image: ghcr.io/charl56/daccords:latest
+    restart: always
+    ports:
+      - "127.0.0.1:8090:80"
