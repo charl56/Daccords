@@ -232,43 +232,42 @@ const INTERVAL_TO_SEMITONES: Record<string, number> = {
 
 // État réactif
 // const poly = new Tone.Synth({
-	// volume: 0,
-	// detune: 0,
-	// portamento: 0.05,
-	// envelope: {
-	// 	attack: 0.05,
-	// 	attackCurve: "exponential",
-	// 	decay: 0.2,
-	// 	decayCurve: "exponential",
-	// 	release: 1.5,
-	// 	releaseCurve: "exponential",
-	// 	sustain: 0.2
-	// },
-	// oscillator: {
-	// 	partialsCount: 0,
-	// 	phase: 0,
-	// 	type: "amtriangle",
-	// 	harmonicity: 0.5,
-	// 	modulationType: "sine"
-	// }
-
+// 	volume: 0,
+// 	detune: 0,
+// 	portamento: 0.05,
+// 	envelope: {
+// 		attack: 0.05,
+// 		attackCurve: "exponential",
+// 		decay: 0.2,
+// 		decayCurve: "exponential",
+// 		release: 1.5,
+// 		releaseCurve: "exponential",
+// 		sustain: 0.2
+// 	},
+// 	oscillator: {
+// 		partialsCount: 0,
+// 		phase: 0,
+// 		type: "amtriangle",
+// 		harmonicity: 0.5,
+// 		modulationType: "sine"
+// 	}
+// }).toDestination()
 
 
 const poly = new Tone.PolySynth({
-
-    // voice: Tone.Synth, // Synthé simple pour un son clair, type piano
-    // options: {
-    //     oscillator: {
-    //         type: "triangle" // son doux et classique
-    //     },
-    //     envelope: {
-    //         attack: 0.005,   // très rapide comme un piano
-    //         decay: 0.2,      // courte décroissance
-    //         sustain: 0.4,    // sustain moyen
-    //         release: 1,      // relâchement pour simuler le son d'une touche de piano
-    //         attackCurve: "linear"
-    //     }
-    // }
+    voice: Tone.Synth, // Synthé simple pour un son clair, type piano
+    options: {
+        oscillator: {
+            type: "triangle" // son doux et classique
+        },
+        envelope: {
+            attack: 0.005,   // très rapide comme un piano
+            decay: 0.2,      // courte décroissance
+            sustain: 0.4,    // sustain moyen
+            release: 1,      // relâchement pour simuler le son d'une touche de piano
+            attackCurve: "exponential"
+        }
+    }
 }).toDestination()
 
 
