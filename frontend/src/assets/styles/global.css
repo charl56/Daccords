@@ -11,9 +11,11 @@ body {
 /* Buttons */
 button {
     height: 48px;
+    width: 80px;
+
 
     color: black;
-    padding: 12px 24px;
+    /* padding: 12px 24px; */
     border-radius: 12px;
     font-weight: 600;
     font-size: 1rem;
@@ -50,4 +52,36 @@ button:hover {
 .neutre {
     background-color: #f3f4f6;
     border: 2px solid #d1d5db;
+}
+
+
+/* Styles pour les labels et selects */
+label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+select:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px #6366f1;
+}
+
+
+
+@media screen and (max-width: 640px) {
+    label {
+    }
 }

@@ -12,20 +12,6 @@
                 <PianoComponent :highlighted-notes="currentChordNotes" @note-click="playNote" />
                 <!-- Contrôles -->
                 <div class="controles-div">
-                    <!-- Bouton jouer l'accord -->
-                    <div class="mt-4 text-center">
-                        <div class="text-sm text-gray-600 mb-2">
-                            Notes: {{currentChordNotes.map(note => [note]).join(' - ')}}
-                        </div>
-                        <button @click="playChord(selectedRoot, selectedChord)"
-                            :disabled="isPlaying || !audioInitialized" class="btn-play" :class="[
-                                isPlaying || !audioInitialized
-                                    ? 'bg-gray-400 cursor-not-allowed'
-                                    : 'bg-indigo-600 hover:bg-indigo-700 active:scale-95'
-                            ]">
-                            {{ isPlaying ? '⏸️ Lecture...' : '▶️ Jouer l\'accord' }}
-                        </button>
-                    </div>
                     <!-- Mode de lecture -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Mode de lecture</label>
@@ -48,30 +34,28 @@
                     </div>
 
                     <!-- Filtres -->
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Type</label>
-                            <select v-model="filters.type" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                                <option value="all">Tous les types</option>
-                                <option value="major">Majeur</option>
-                                <option value="minor">Mineur</option>
-                                <option value="augmented">Augmenté</option>
-                                <option value="diminished">Diminué</option>
-                                <option value="suspended">Suspendu</option>
-                                <option value="extended">Étendu</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Humeur</label>
-                            <select v-model="filters.mood" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                                <option value="all">Toutes les humeurs</option>
-                                <option value="joyeux">Joyeux</option>
-                                <option value="triste">Triste</option>
-                                <option value="tendu">Tendu</option>
-                                <option value="mystérieux">Mystérieux</option>
-                                <option value="neutre">Neutre</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Type</label>
+                        <select v-model="filters.type" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
+                            <option value="all">Tous les types</option>
+                            <option value="major">Majeur</option>
+                            <option value="minor">Mineur</option>
+                            <option value="augmented">Augmenté</option>
+                            <option value="diminished">Diminué</option>
+                            <option value="suspended">Suspendu</option>
+                            <option value="extended">Étendu</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Humeur</label>
+                        <select v-model="filters.mood" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
+                            <option value="all">Toutes les humeurs</option>
+                            <option value="joyeux">Joyeux</option>
+                            <option value="triste">Triste</option>
+                            <option value="tendu">Tendu</option>
+                            <option value="mystérieux">Mystérieux</option>
+                            <option value="neutre">Neutre</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -122,7 +106,7 @@
                                         ]" :title="`${getChordDisplayName(root, chordType)} - ${chordData.mood}`">
                                         <div class="flex flex-col items-center justify-center h-full">
                                             <span class="text-gray-800">{{ getChordDisplayName(root, chordType)
-                                            }}</span>
+                                                }}</span>
                                             <!-- <span class="text-xs opacity-75 capitalize">{{ chordData.mood }}</span> -->
                                         </div>
                                     </button>
@@ -230,43 +214,18 @@ const INTERVAL_TO_SEMITONES: Record<string, number> = {
     '13': 21, '#13': 22
 }
 
-// État réactif
-// const poly = new Tone.Synth({
-// 	volume: 0,
-// 	detune: 0,
-// 	portamento: 0.05,
-// 	envelope: {
-// 		attack: 0.05,
-// 		attackCurve: "exponential",
-// 		decay: 0.2,
-// 		decayCurve: "exponential",
-// 		release: 1.5,
-// 		releaseCurve: "exponential",
-// 		sustain: 0.2
-// 	},
-// 	oscillator: {
-// 		partialsCount: 0,
-// 		phase: 0,
-// 		type: "amtriangle",
-// 		harmonicity: 0.5,
-// 		modulationType: "sine"
-// 	}
-// }).toDestination()
 
-
-const poly = new Tone.PolySynth({
-    voice: Tone.Synth, // Synthé simple pour un son clair, type piano
-    options: {
-        oscillator: {
-            type: "triangle" // son doux et classique
-        },
-        envelope: {
-            attack: 0.005,   // très rapide comme un piano
-            decay: 0.2,      // courte décroissance
-            sustain: 0.4,    // sustain moyen
-            release: 1,      // relâchement pour simuler le son d'une touche de piano
-            attackCurve: "exponential"
-        }
+// Synthétiseur polyphonique
+const poly = new Tone.PolySynth(Tone.Synth).set({
+    oscillator: {
+        type: "fattriangle" // son doux et classique
+    },
+    envelope: {
+        attack: 0.01,
+        decay: 0.1,
+        sustain: 0.5,
+        release: 0.4,
+        attackCurve: "exponential"
     }
 }).toDestination()
 
@@ -322,20 +281,6 @@ const initializeAudio = async (): Promise<void> => {
             await Tone.start()
             console.log('Contexte audio démarré')
         }
-
-        // Création du PolySynth fonctionnel
-        // const poly = new Tone.PolySynth(Tone.AMSynth).toDestination();
-
-        // synth.value = new Tone.PolySynth(Tone.AMSynth).set({
-        //     oscillator: { type: "fatsawtooth" },
-        //     envelope: {
-        //         attack: 0.01,
-        //         decay: 0.1,
-        //         sustain: 0.5,
-        //         release: 0.4,
-        //         attackCurve: "exponential"
-        //     }
-        // }).toDestination()
 
         audioInitialized.value = true
         console.log('Synthétiseur initialisé')
@@ -694,12 +639,14 @@ td button.selected {
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
+    padding: 5px 0px;
 }
 
 @media (max-width: 768px) {
     .controles-div {
-        flex-direction: column;
-        gap: 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
     }
 }
 
@@ -722,6 +669,7 @@ td button.selected {
 
 
 .btn-activation-audio {
+    width: 200px;
     background-color: #10b981;
 
 }
@@ -733,5 +681,6 @@ td button.selected {
 .btn-play {
     color: black !important;
     transition: all 0.2s;
+    width: 200px;
 }
 </style>
