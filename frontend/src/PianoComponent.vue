@@ -42,7 +42,7 @@ onMounted(() => {
         emit('note-click', `${note.note}${note.accidental || ''}${note.octave}`);
     });
 
-    piano.value.addKeyMouseDownListener((note) => {
+    piano.value.addKeyMouseUpListener((note) => {
         startAnimation([`${note.note}${note.accidental || ''}${note.octave}`]);
         emit('note-click', `${note.note}${note.accidental || ''}${note.octave}`);
     });

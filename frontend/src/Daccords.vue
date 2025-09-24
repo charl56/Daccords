@@ -99,7 +99,7 @@
                                         ]" :title="`${getChordDisplayName(root, chordType)} - ${chordData.mood}`">
                                         <div class="chord-btn-content">
                                             <span class="chord-label">{{ getChordDisplayName(root, chordType)
-                                                }}</span>
+                                            }}</span>
                                             <!-- <span class="text-xs opacity-75 capitalize">{{ chordData.mood }}</span> -->
                                         </div>
                                     </button>
@@ -209,18 +209,89 @@ const INTERVAL_TO_SEMITONES: Record<string, number> = {
 
 
 // Synthétiseur polyphonique
-const poly = new Tone.PolySynth(Tone.Synth).set({
-    oscillator: {
-        type: "fattriangle" // son doux et classique
-    },
-    envelope: {
-        attack: 0.01,
-        decay: 0.1,
-        sustain: 0.5,
-        release: 0.4,
-        attackCurve: "exponential"
+// const poly = new Tone.PolySynth(Tone.Synth).set({
+//     oscillator: {
+//         type: "fattriangle" // son doux et classique
+//     },
+//     envelope: {
+//         attack: 0.01,
+//         decay: 0.1,
+//         sustain: 0.5,
+//         release: 0.4,
+//         attackCurve: "exponential"
+//     }
+// }).toDestination()
+
+
+const poly = new Tone.PolySynth({
+    voice: Tone.FMSynth,
+    options: {
+        // Oscillateur principal avec harmoniques
+        harmonicity: 3.01,
+        modulationIndex: 14,
+
+        // Oscillateur modulateur pour la richesse harmonique
+        modulation: {
+            type: "square"
+        },
+
+        // Oscillateur porteur
+        oscillator: {
+            type: "triangle"
+        },
+
+        // Enveloppe principale - attaque rapide comme un marteau de piano
+        envelope: {
+            attack: 0.02,    // Attaque très rapide (marteau qui frappe)
+            decay: 0.6,       // Déclin plus long
+            sustain: 0.5,     // Sustain faible (piano naturel)
+            release: 0.7,     // Release longue pour la résonance
+            attackCurve: "exponential",
+            decayCurve: "exponential"
+        },
+
+        // Enveloppe de modulation pour l'évolution du timbre
+        modulationEnvelope: {
+            attack: 0.01,
+            decay: 0.6,
+            sustain: 0,
+            release: 0.2
+        }
     }
-}).toDestination()
+}).toDestination();
+
+// Réverbe pour simuler la résonance de la caisse du piano
+const reverb = new Tone.Reverb({
+    decay: 2.5,         // Déclin de la réverbe
+    wet: 0.3            // Mélange sec/humide
+}).toDestination();
+
+// Filtre passe-bas pour adoucir les hautes fréquences
+const lowpass = new Tone.Filter({
+    frequency: 8000,    // Coupe les fréquences trop aiguës
+    type: "lowpass",
+    rolloff: -12
+});
+
+// Compresseur pour égaliser la dynamique
+const compressor = new Tone.Compressor({
+    threshold: -12,
+    ratio: 3,
+    attack: 0.003,
+    release: 0.1
+});
+
+// Égaliseur pour sculpter le son
+const eq = new Tone.EQ3({
+    low: 0,           // Graves neutres
+    mid: 2,           // Médiums légèrement boostés
+    high: -3          // Aigus légèrement atténués
+});
+
+// Chaîne d'effets : Piano → EQ → Filtre → Compresseur → Réverbe
+poly.chain(eq, lowpass, compressor, reverb);
+
+
 
 
 
