@@ -14,9 +14,8 @@
                 <div class="controles-div">
                     <!-- Mode de lecture -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Mode de lecture</label>
-                        <select v-model="playMode.type"
-                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <label>Mode de lecture</label>
+                        <select v-model="playMode.type">
                             <option value="simultané">Simultané</option>
                             <option value="arpège montant">Arpège montant</option>
                             <option value="arpège descendant">Arpège descendant</option>
@@ -26,17 +25,16 @@
 
                     <!-- Vitesse -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <label>
                             Vitesse arpège: {{ playMode.speed }}ms
                         </label>
-                        <input type="range" min="50" max="500" step="50" v-model.number="playMode.speed"
-                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider" />
+                        <input type="range" min="50" max="500" step="50" v-model.number="playMode.speed" />
                     </div>
 
                     <!-- Filtres -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Type</label>
-                        <select v-model="filters.type" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
+                        <label>Type</label>
+                        <select v-model="filters.type">
                             <option value="all">Tous les types</option>
                             <option value="major">Majeur</option>
                             <option value="minor">Mineur</option>
@@ -47,8 +45,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Humeur</label>
-                        <select v-model="filters.mood" class="w-full p-2 border border-gray-300 rounded-lg text-sm">
+                        <label>Humeur</label>
+                        <select v-model="filters.mood">
                             <option value="all">Toutes les humeurs</option>
                             <option value="joyeux">Joyeux</option>
                             <option value="triste">Triste</option>
@@ -64,23 +62,18 @@
 
 
             <!-- Tableau des accords -->
-            <div class="tableau-accords-div bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="p-4 bg-gray-50 border-b">
-                    <h2 class="text-xl font-semibold text-gray-800">
-                        Tableau des accords ({{ filteredChords.length }} accords)
+            <div class="tableau-accords-div">
+                <div class="tableau-header">
+                    <h2 class="tableau-title"> Tableau des accords ({{ filteredChords.length }} accords)
                     </h2>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
+                <div class="tableau-container">
+                    <table class="tableau">
+                        <thead>
                             <tr>
-                                <th
-                                    class="sticky left-0 bg-gray-50 px-4 py-3 text-left font-semibold text-gray-700 border-r">
-                                    Note
-                                </th>
-                                <th v-for="[chordType] in filteredChords" :key="chordType"
-                                    class="px-3 py-3 text-center font-semibold text-gray-700 min-w-[80px] border-r">
+                                <th class="col-note">Note</th>
+                                <th v-for="[chordType] in filteredChords" :key="chordType" class="col-chord">
                                     {{ chordType || 'Maj' }}
                                 </th>
                             </tr>
@@ -88,24 +81,24 @@
                         <tbody>
                             <tr v-for="(root, rowIndex) in CHROMATIC_NOTES" :key="root"
                                 :class="rowIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'">
-                                <td class="sticky left-0 bg-inherit px-4 py-2 font-semibold text-gray-700 border-r">
+                                <td class="col-note">
                                     {{ NOTE_NAMES[root] }}
                                 </td>
                                 <td v-for="[chordType, chordData] in filteredChords" :key="`${root}-${chordType}`"
-                                    class="px-1 py-1 border-r">
+                                    class="col-cell">
                                     <button @click="onChordClick(root, chordType)" :disabled="!audioInitialized"
                                         class="w-full h-12 rounded-md text-xs font-semibold transition-all duration-200 border-2"
                                         :class="[
                                             selectedRoot === root && selectedChord === chordType
-                                                ? 'ring-2 ring-indigo-500 ring-offset-2 transform scale-105'
+                                                ? 'chord-btn-selected'
                                                 : '',
                                             !audioInitialized
-                                                ? 'opacity-50 cursor-not-allowed'
-                                                : 'hover:shadow-md active:scale-95 cursor-pointer',
+                                                ? 'chord-btn-disabled'
+                                                : 'chord-btn-hover',
                                             getMoodColor(chordData.mood)
                                         ]" :title="`${getChordDisplayName(root, chordType)} - ${chordData.mood}`">
-                                        <div class="flex flex-col items-center justify-center h-full">
-                                            <span class="text-gray-800">{{ getChordDisplayName(root, chordType)
+                                        <div class="chord-btn-content">
+                                            <span class="chord-label">{{ getChordDisplayName(root, chordType)
                                                 }}</span>
                                             <!-- <span class="text-xs opacity-75 capitalize">{{ chordData.mood }}</span> -->
                                         </div>
@@ -118,28 +111,28 @@
             </div>
 
             <!-- Légende des humeurs -->
-            <div class="mt-6 bg-white rounded-xl shadow-lg p-4">
-                <h3 class="text-lg font-semibold text-gray-800 mb-3">Légende des humeurs</h3>
-                <div class="flex flex-wrap gap-4">
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded joyeux"></div>
-                        <span class="text-sm text-gray-700">Joyeux</span>
+            <div class="legend-card">
+                <h3 class="legend-title">Légende des humeurs</h3>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color joyeux"></div>
+                        <span class="legend-label">Joyeux</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded triste"></div>
-                        <span class="text-sm text-gray-700">Triste</span>
+                    <div class="legend-item">
+                        <div class="legend-color triste"></div>
+                        <span class="legend-label">Triste</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded tendu"></div>
-                        <span class="text-sm text-gray-700">Tendu</span>
+                    <div class="legend-item">
+                        <div class="legend-color tendu"></div>
+                        <span class="legend-label">Tendu</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded mysterieux"></div>
-                        <span class="text-sm text-gray-700">Mystérieux</span>
+                    <div class="legend-item">
+                        <div class="legend-color mysterieux"></div>
+                        <span class="legend-label">Mystérieux</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded neutre"></div>
-                        <span class="text-sm text-gray-700">Neutre</span>
+                    <div class="legend-item">
+                        <div class="legend-color neutre"></div>
+                        <span class="legend-label">Neutre</span>
                     </div>
                 </div>
             </div>
@@ -400,217 +393,151 @@ onUnmounted(() => {
 </script>
 
 <style>
-/* .slider::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #4f46e5;
-    cursor: pointer;
-    border-radius: 50%;
+/* Conteneur du tableau */
+.tableau-accords-div {
+    background: #fff;
+    border-radius: 0.75rem;
+    /* rounded-xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* shadow-lg */
+    overflow: hidden;
 }
 
-.slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: #4f46e5;
-    cursor: pointer;
-    border-radius: 50%;
-    border: none;
-} */
-
-
-
-
-
-/* 
-.max-w-7xl {
-    max-width: 1280px;
-    width: 100%;
-} */
-
-/* En-tête */
-/* .text-center {
-    text-align: center;
-    margin-bottom: 32px;
+/* En-tête du tableau */
+.tableau-header {
+    padding: 1rem;
+    /* p-4 */
+    background: #f9fafb;
+    /* gray-50 */
+    border-bottom: 1px solid #e5e7eb;
+    /* border-b */
 }
 
-h1 {
-    font-size: 2.25rem;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-p {
-    color: #4b5563;
-    font-size: 1rem;
-}
-
-button {
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-}
-
-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-} */
-
-/* Bouton activer audio */
-/* .bg-green-600 {
-    background-color: #16a34a;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 12px;
+.tableau-title {
+    font-size: 1.25rem;
+    /* text-xl */
     font-weight: 600;
+    /* font-semibold */
+    color: #1f2937;
+    /* gray-800 */
 }
 
-.bg-green-600:hover {
-    background-color: #15803d;
-} */
-
-/* Card / Panel */
-/* .bg-white {
-    background-color: white;
+/* Container scroll horizontal */
+.tableau-container {
+    overflow-x: auto;
 }
 
-.rounded-xl {
-    border-radius: 16px;
-}
-
-.shadow-lg {
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-}
-
-.p-6 {
-    padding: 24px;
-}
-
-.mb-6 {
-    margin-bottom: 24px;
-}
-
-.grid {
-    display: grid;
-    gap: 24px;
-}
-
-.grid-cols-1 {
-    grid-template-columns: 1fr;
-}
-
-.md\:grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr);
-} */
-
-/* Form inputs */
-/* select,
-input[type="range"] {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    font-size: 0.875rem;
-}
-
-input[type="range"] {
-    height: 8px;
-    background: #e5e7eb;
-    appearance: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #4f46e5;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: #4f46e5;
-    cursor: pointer;
-    border-radius: 50%;
-    border: none;
-} */
-
-/* Tableau */
-/* table {
+/* Table */
+.tableau {
     width: 100%;
     border-collapse: collapse;
 }
 
-thead {
-    background-color: #f9fafb;
+.tableau thead {
+    background: #f9fafb;
+    /* gray-50 */
 }
 
-th,
-td {
+.tableau th,
+.tableau td {
     border-right: 1px solid #e5e7eb;
-    padding: 8px;
-    font-weight: 500;
+    /* border-r */
 }
 
-th {
-    position: sticky;
-    top: 0;
-    background-color: #f9fafb;
-    text-align: center;
-}
-
-td.sticky-left {
+.col-note {
     position: sticky;
     left: 0;
-    background-color: inherit;
-}
-
-td button {
-    width: 100%;
-    height: 48px;
-    border-radius: 8px;
-    font-size: 0.75rem;
+    background: inherit;
+    padding: 0.75rem 1rem;
+    /* px-4 py-3 */
+    text-align: left;
     font-weight: 600;
-    transition: all 0.2s;
+    color: #374151;
+    /* gray-700 */
+    z-index: 5;
 }
 
-td button:hover {
+.col-chord {
+    min-width: 80px;
+    /* min-w-[80px] */
+    padding: 0.75rem 0.75rem;
+    /* px-3 py-3 */
+    text-align: center;
+    font-weight: 600;
+    color: #374151;
+    /* gray-700 */
+}
+
+.col-cell {
+
+    padding: 0.25rem;
+    /* px-1 py-1 */
+}
+
+/* Alternance des lignes */
+.row-even {
+    background: #f9fafb;
+    /* gray-50 */
+}
+
+.row-odd {
+    background: #fff;
+}
+
+/* Bouton d’accord */
+.chord-btn {
+    width: 100% !important;
+    height: 3rem;
+    /* h-12 */
+    border-radius: 0.375rem;
+    /* rounded-md */
+    font-size: 0.75rem;
+    /* text-xs */
+    font-weight: 600;
+    /* font-semibold */
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    background: white;
+    cursor: pointer;
+}
+
+/* Bouton sélectionné */
+.chord-btn-selected {
+    box-shadow: 0 0 0 2px #6366f1;
+    /* ring-indigo-500 */
+    transform: scale(1.05);
+}
+
+/* Bouton disabled */
+.chord-btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Bouton hover */
+.chord-btn-hover:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chord-btn-hover:active {
     transform: scale(0.95);
 }
 
-td button.selected {
-    box-shadow: 0 0 0 2px #6366f1;
-    transform: scale(1.05);
-} */
-
-
-
-/* Légende */
-/* .legend {
+/* Contenu du bouton */
+.chord-btn-content {
     display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 24px;
-}
-
-.legend div {
-    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
+    height: 100%;
 }
 
-.legend div span {
-    font-size: 0.875rem;
-    color: #374151;
-} */
-
+.chord-label {
+    color: #1f2937;
+    /* gray-800 */
+}
 
 
 /* Conteneur principal */
@@ -682,5 +609,67 @@ td button.selected {
     color: black !important;
     transition: all 0.2s;
     width: 200px;
+}
+
+
+/* Card principale */
+.legend-card {
+    margin-top: 1.5rem;
+    /* mt-6 */
+    background: #fff;
+    /* bg-white */
+    border-radius: 0.75rem;
+    /* rounded-xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* shadow-lg */
+    padding: 1rem;
+    /* p-4 */
+}
+
+/* Titre */
+.legend-title {
+    font-size: 1.125rem;
+    /* text-lg */
+    font-weight: 600;
+    /* font-semibold */
+    color: #1f2937;
+    /* gray-800 */
+    margin-bottom: 0.75rem;
+    /* mb-3 */
+}
+
+/* Container des items */
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    /* gap-4 */
+}
+
+/* Item individuel */
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* gap-2 */
+}
+
+/* Petite couleur */
+.legend-color {
+    width: 1rem;
+    /* w-4 */
+    height: 1rem;
+    /* h-4 */
+    border-radius: 0.25rem;
+    /* rounded */
+}
+
+/* Label */
+.legend-label {
+    font-size: 0.875rem;
+    /* text-sm */
+    color: #374151;
+    /* gray-700 */
 }
 </style>
