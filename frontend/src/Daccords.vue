@@ -63,11 +63,6 @@
 
             <!-- Tableau des accords -->
             <div class="tableau-accords-div">
-                <div class="tableau-header">
-                    <h2 class="tableau-title"> Tableau des accords ({{ filteredChords.length }} accords)
-                    </h2>
-                </div>
-
                 <div class="tableau-container">
                     <table class="tableau">
                         <thead>
@@ -208,19 +203,8 @@ const INTERVAL_TO_SEMITONES: Record<string, number> = {
 }
 
 
-// Synthétiseur polyphonique
-// const poly = new Tone.PolySynth(Tone.Synth).set({
-//     oscillator: {
-//         type: "fattriangle" // son doux et classique
-//     },
-//     envelope: {
-//         attack: 0.01,
-//         decay: 0.1,
-//         sustain: 0.5,
-//         release: 0.4,
-//         attackCurve: "exponential"
-//     }
-// }).toDestination()
+
+
 
 
 const poly = new Tone.PolySynth({
@@ -466,33 +450,12 @@ onUnmounted(() => {
 <style>
 /* Conteneur du tableau */
 .tableau-accords-div {
-    background: #fff;
-    border-radius: 0.75rem;
-    /* rounded-xl */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
         0 4px 6px -2px rgba(0, 0, 0, 0.05);
     /* shadow-lg */
     overflow: hidden;
 }
 
-/* En-tête du tableau */
-.tableau-header {
-    padding: 1rem;
-    /* p-4 */
-    background: #f9fafb;
-    /* gray-50 */
-    border-bottom: 1px solid #e5e7eb;
-    /* border-b */
-}
-
-.tableau-title {
-    font-size: 1.25rem;
-    /* text-xl */
-    font-weight: 600;
-    /* font-semibold */
-    color: #1f2937;
-    /* gray-800 */
-}
 
 /* Container scroll horizontal */
 .tableau-container {
@@ -649,12 +612,10 @@ onUnmounted(() => {
 }
 
 .piano-div {
+    background-color: #dbeafe;
     position: sticky;
     top: 0;
     z-index: 10;
-    background: linear-gradient(to bottom right, #eef2ff, #dbeafe);
-
-    border-radius: 8px;
     margin-bottom: 24px;
 }
 
@@ -687,7 +648,7 @@ onUnmounted(() => {
 .legend-card {
     margin-top: 1.5rem;
     /* mt-6 */
-    background: #fff;
+    /* background: #fff; */
     /* bg-white */
     border-radius: 0.75rem;
     /* rounded-xl */
